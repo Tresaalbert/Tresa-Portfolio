@@ -313,6 +313,38 @@
     </div>
   </div>
 </div>
+  <!-- IMAGE MODAL -->
+<div id="image-modal" role="dialog" aria-modal="true" aria-label="Achievement Viewer"
+  style="position:fixed;inset:0;z-index:10000;background:rgba(30,18,21,0.65);backdrop-filter:blur(16px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.4s cubic-bezier(0.23,1,0.32,1);cursor:auto;">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;
+    width:min(92vw,760px);max-height:90vh;display:flex;flex-direction:column;
+    transform:scale(0.92) translateY(20px);transition:transform 0.4s cubic-bezier(0.23,1,0.32,1);
+    overflow:hidden;box-shadow:0 32px 80px rgba(30,18,21,0.28);" id="image-modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;
+      padding:1.2rem 1.6rem;border-bottom:1px solid var(--border);flex-shrink:0;background:#fff;">
+      <span style="font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--accent);" id="image-modal-title">Achievement</span>
+      <div style="display:flex;gap:0.8rem;align-items:center;">
+        <a id="image-modal-download" href="#" download
+          style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 1.3rem;
+          background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-weight:600;
+          font-size:0.82rem;border:none;border-radius:100px;cursor:pointer;text-decoration:none;
+          transition:all 0.3s;letter-spacing:0.04em;">⬇ Download</a>
+        <button id="image-modal-close"
+          style="width:34px;height:34px;border-radius:50%;border:1px solid var(--border);
+          background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;
+          justify-content:center;font-size:1rem;transition:all 0.3s;">✕</button>
+      </div>
+    </div>
+    <div style="flex:1;overflow:auto;padding:1.5rem;display:flex;align-items:center;
+      justify-content:center;background:var(--surface);">
+      <img id="image-modal-img" src="" alt=""
+        style="max-width:100%;max-height:calc(90vh - 120px);border-radius:8px;
+        object-fit:contain;box-shadow:0 8px 32px rgba(30,18,21,0.18);" />
+    </div>
+  </div>
+</div>
 
 <!-- NAV -->
 <nav id="navbar">
@@ -559,7 +591,10 @@
       </div>
       <div style="padding:0 2rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:0.7rem;color:var(--accent);border:1px solid rgba(181,67,58,0.25);padding:2px 10px;border-radius:100px;">2024</span>
-        <a href="nacotech_competition_certificate.pdf" target="_blank" style="font-size:0.75rem;color:var(--muted);text-decoration:none;letter-spacing:0.05em;transition:color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">View Certificate ↗</a>
+        <div style="padding:0 2rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
+  <span style="font-size:0.7rem;color:var(--accent);border:1px solid rgba(181,67,58,0.25);padding:2px 10px;border-radius:100px;">2024</span>
+  <button onclick="openImageModal('nacotech.jpg','Nacotech Competition Winner')" style="font-size:0.75rem;color:var(--muted);background:none;border:none;cursor:pointer;letter-spacing:0.05em;">View Image ↗</button>
+</div>
       </div>
     </div>
 
@@ -579,7 +614,10 @@
       </div>
       <div style="padding:0 2rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:0.7rem;color:var(--accent);border:1px solid rgba(181,67,58,0.25);padding:2px 10px;border-radius:100px;">2023</span>
-        <a href="Conference_SJC.pdf" target="_blank" style="font-size:0.75rem;color:var(--muted);text-decoration:none;letter-spacing:0.05em;transition:color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">View Certificate ↗</a>
+        <div style="padding:0 2rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
+  <span style="font-size:0.7rem;color:var(--accent);border:1px solid rgba(181,67,58,0.25);padding:2px 10px;border-radius:100px;">2023</span>
+  <button onclick="openImageModal('conference.jpg','St. Joseph\'s College Conference')" style="font-size:0.75rem;color:var(--muted);background:none;border:none;cursor:pointer;letter-spacing:0.05em;">View Image ↗</button>
+</div>
       </div>
     </div>
 
@@ -599,7 +637,10 @@
       </div>
       <div style="padding:0 2rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:0.7rem;color:var(--accent);border:1px solid rgba(181,67,58,0.25);padding:2px 10px;border-radius:100px;">2023</span>
-        <a href="sjc_indep_singing.pdf" target="_blank" style="font-size:0.75rem;color:var(--muted);text-decoration:none;letter-spacing:0.05em;transition:color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">View Certificate ↗</a>
+        <div style="padding:0 2rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
+  <span style="font-size:0.7rem;color:var(--accent);border:1px solid rgba(181,67,58,0.25);padding:2px 10px;border-radius:100px;">2023</span>
+  <button onclick="openImageModal('fine-arts.jpg','Independent Singing — SJC Event')" style="font-size:0.75rem;color:var(--muted);background:none;border:none;cursor:pointer;letter-spacing:0.05em;">View Image ↗</button>
+</div>
       </div>
     </div>
 
@@ -788,6 +829,65 @@ document.getElementById('contact-resume-btn').addEventListener('click', openModa
 closeBtn.addEventListener('click', closeModal);
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+/* ── IMAGE MODAL ── */
+const imgModal     = document.getElementById('image-modal');
+const imgModalBox  = document.getElementById('image-modal-box');
+const imgEl        = document.getElementById('image-modal-img');
+const imgTitle     = document.getElementById('image-modal-title');
+const imgDownload  = document.getElementById('image-modal-download');
+const imgClose     = document.getElementById('image-modal-close');
+
+function openImageModal(src, title) {
+  imgEl.src = src;
+  imgEl.alt = title;
+  imgTitle.textContent = '🖼 ' + title;
+  imgDownload.href = src;
+  imgDownload.download = title.replace(/[^a-z0-9]/gi, '_') + '.jpg';
+  imgModal.style.opacity = '0';
+  imgModal.style.pointerEvents = 'all';
+  imgModalBox.style.transform = 'scale(0.92) translateY(20px)';
+  requestAnimationFrame(() => {
+    imgModal.style.opacity = '1';
+    imgModalBox.style.transform = 'scale(1) translateY(0)';
+  });
+  document.body.style.overflow = 'hidden';
+  cursor.style.display = 'none';
+  ring.style.display = 'none';
+}
+
+function closeImageModal() {
+  imgModal.style.opacity = '0';
+  imgModalBox.style.transform = 'scale(0.92) translateY(20px)';
+  setTimeout(() => { imgModal.style.pointerEvents = 'none'; }, 400);
+  document.body.style.overflow = '';
+  cursor.style.display = '';
+  ring.style.display = '';
+}
+
+imgClose.addEventListener('click', closeImageModal);
+imgModal.addEventListener('click', e => { if (e.target === imgModal) closeImageModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeImageModal(); });
+
+imgClose.addEventListener('mouseenter', () => {
+  imgClose.style.borderColor = 'var(--accent)';
+  imgClose.style.color = 'var(--accent)';
+  imgClose.style.transform = 'rotate(90deg)';
+});
+imgClose.addEventListener('mouseleave', () => {
+  imgClose.style.borderColor = 'var(--border)';
+  imgClose.style.color = 'var(--muted)';
+  imgClose.style.transform = '';
+});
+imgDownload.addEventListener('mouseenter', () => {
+  imgDownload.style.background = '#9c3a32';
+  imgDownload.style.boxShadow = '0 6px 20px rgba(181,67,58,0.35)';
+  imgDownload.style.transform = 'translateY(-1px)';
+});
+imgDownload.addEventListener('mouseleave', () => {
+  imgDownload.style.background = 'var(--accent)';
+  imgDownload.style.boxShadow = '';
+  imgDownload.style.transform = '';
+});
 </script>
 </body>
 </html>
