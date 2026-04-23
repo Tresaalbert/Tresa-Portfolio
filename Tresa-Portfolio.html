@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hema Kanikkai Tresa A — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #faf7f5;
+      --surface: #f2ede9;
+      --card: #ffffff;
+      --accent: #b5433a;
+      --accent2: #9c6b3c;
+      --accent3: #7b3058;
+      --text: #1e1215;
+      --muted: #6b5155;
+      --border: rgba(181,67,58,0.15);
+      --glow: rgba(181,67,58,0.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; cursor: none; }
+
+    /* ── CURSOR ── */
+    #cursor { position: fixed; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: multiply; transition: width 0.2s, height 0.2s; }
+    #cursor-ring { position: fixed; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(181,67,58,0.45); pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: left 0.12s ease, top 0.12s ease, width 0.25s, height 0.25s; }
+
+    /* ── CANVAS ── */
+    #particle-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    /* ── RIPPLE ── */
+    .ripple-container { position: fixed; inset: 0; pointer-events: none; z-index: 9990; overflow: hidden; }
+    .ripple { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(181,67,58,0.15) 0%, transparent 70%); transform: translate(-50%,-50%) scale(0); animation: rippleOut 0.8s ease-out forwards; pointer-events: none; }
+    @keyframes rippleOut { to { transform: translate(-50%,-50%) scale(1); opacity: 0; } }
+
+    /* ── SPARK ── */
+    .spark { position: fixed; pointer-events: none; z-index: 9995; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: sparkFly var(--dur,0.6s) ease-out forwards; }
+    @keyframes sparkFly { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx),var(--ty)) scale(0); opacity: 0; } }
+
+    /* ── PROGRESS BAR ── */
+    #progress-bar { position: fixed; top: 0; left: 0; height: 2px; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); z-index: 9999; transition: width 0.1s; }
+
+    /* ── NAV ── */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: rgba(250,247,245,0.88); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); transition: padding 0.4s; }
+    nav.scrolled { padding: 0.7rem 5%; background: rgba(250,247,245,0.97); box-shadow: 0 2px 20px rgba(181,67,58,0.07); }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--accent); letter-spacing: 0.05em; position: relative; }
+    .nav-logo::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1px; background: var(--accent); transition: width 0.4s; }
+    .nav-logo:hover::after { width: 100%; }
+    .nav-links { display: flex; gap: 1.4rem; list-style: none; flex-wrap: wrap; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.78rem; letter-spacing: 0.07em; text-transform: uppercase; position: relative; padding-bottom: 3px; transition: color 0.3s; }
+    .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 1px; background: var(--accent); transition: width 0.3s, left 0.3s; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links a:hover::after { width: 100%; left: 0; }
+
+    /* ── HERO ── */
+    #hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 0 5%; position: relative; overflow: hidden; z-index: 1; }
+    .hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; animation: orbFloat 8s ease-in-out infinite; }
+    .hero-orb-1 { width: 500px; height: 500px; top: -10%; right: -5%; background: radial-gradient(circle, rgba(123,48,88,0.1), transparent 70%); animation-delay: 0s; }
+    .hero-orb-2 { width: 350px; height: 350px; bottom: 0; left: -8%; background: radial-gradient(circle, rgba(181,67,58,0.08), transparent 70%); animation-delay: -4s; }
+    .hero-orb-3 { width: 200px; height: 200px; top: 40%; left: 40%; background: radial-gradient(circle, rgba(156,107,60,0.07), transparent 70%); animation-delay: -2s; }
+    @keyframes orbFloat { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-30px) scale(1.05); } }
+    .hero-grid { position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(rgba(181,67,58,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(181,67,58,0.04) 1px, transparent 1px); background-size: 60px 60px; animation: gridShift 20s linear infinite; }
+    @keyframes gridShift { from { background-position: 0 0; } to { background-position: 60px 60px; } }
+
+    .hero-content { position: relative; z-index: 2; max-width: 800px; }
+    .hero-tag { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); border: 1px solid rgba(181,67,58,0.35); padding: 0.4rem 1.2rem; border-radius: 100px; margin-bottom: 1.8rem; animation: fadeUp 0.8s ease both; background: rgba(181,67,58,0.06); backdrop-filter: blur(8px); }
+    .hero-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(1.4); } }
+
+    .hero-name { font-family: 'Playfair Display', serif; font-size: clamp(3.2rem, 9vw, 7rem); font-weight: 900; line-height: 1.0; animation: fadeUp 0.9s 0.15s ease both; }
+    .hero-name-line { display: block; }
+    .hero-name span { color: var(--accent); font-style: italic; }
+    .hero-name .char { display: inline-block; animation: charDrop 0.6s cubic-bezier(0.23,1,0.32,1) both; }
+    @keyframes charDrop { from { opacity: 0; transform: translateY(60px) rotateX(-40deg); } to { opacity: 1; transform: translateY(0) rotateX(0deg); } }
+
+    .hero-subtitle { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--muted); margin-top: 1.4rem; line-height: 1.8; max-width: 520px; animation: fadeUp 1s 0.3s ease both; }
+    .hero-cta { margin-top: 2.8rem; display: flex; gap: 1rem; flex-wrap: wrap; animation: fadeUp 1s 0.45s ease both; }
+
+    .btn-primary { padding: 0.9rem 2.2rem; background: var(--accent); color: #fff; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.9rem; border: none; border-radius: 100px; cursor: none; text-decoration: none; transition: box-shadow 0.3s, transform 0.15s; position: relative; overflow: hidden; }
+    .btn-primary::before { content: ''; position: absolute; inset: 0; border-radius: 100px; background: rgba(0,0,0,0.1); transform: scaleX(0); transform-origin: left; transition: transform 0.35s; }
+    .btn-primary:hover::before { transform: scaleX(1); }
+    .btn-primary:hover { box-shadow: 0 8px 28px rgba(181,67,58,0.4); }
+    .btn-primary:active { transform: scale(0.96); }
+
+    .btn-outline { padding: 0.9rem 2.2rem; background: var(--accent3); color: #fff; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.9rem; border: none; border-radius: 100px; cursor: none; text-decoration: none; transition: all 0.3s; position: relative; overflow: hidden; }
+    .btn-outline::before { content: ''; position: absolute; inset: 0; border-radius: 100px; background: rgba(0,0,0,0.1); transform: scaleX(0); transform-origin: left; transition: transform 0.35s; }
+    .btn-outline:hover::before { transform: scaleX(1); }
+    .btn-outline:hover { background: #6a2550; box-shadow: 0 8px 28px rgba(123,48,88,0.4); }
+
+    .btn-resume { padding: 0.9rem 2.2rem; background: linear-gradient(135deg, var(--accent3), var(--accent)); color: #fff; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.9rem; border: none; border-radius: 100px; cursor: none; text-decoration: none; transition: all 0.3s; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn-resume:hover { box-shadow: 0 8px 28px rgba(181,67,58,0.4); transform: translateY(-2px); }
+
+    .hero-stats { position: absolute; right: 5%; bottom: 12%; z-index: 2; display: flex; flex-direction: column; gap: 1rem; animation: fadeUp 1s 0.6s ease both; }
+    .stat-card { background: rgba(255,255,255,0.85); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; backdrop-filter: blur(12px); text-align: center; transition: all 0.3s; box-shadow: 0 4px 16px rgba(181,67,58,0.06); }
+    .stat-card:hover { border-color: rgba(181,67,58,0.35); transform: translateX(-6px); box-shadow: 0 10px 32px rgba(181,67,58,0.12); }
+    .stat-number { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--accent); font-weight: 900; }
+    .stat-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* ── SECTIONS ── */
+    section { padding: 7rem 5%; position: relative; z-index: 1; }
+    .section-label { font-size: 0.72rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.6rem; }
+    .section-label::before { content: ''; width: 20px; height: 1px; background: var(--accent); }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; margin-bottom: 3rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+
+    /* ── ABOUT ── */
+    #about { background: var(--surface); }
+    .about-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 5rem; align-items: center; }
+    .about-avatar { width: 100%; aspect-ratio: 3/4; max-width: 320px; border-radius: 16px; overflow: hidden; background: var(--card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; position: relative; transition: box-shadow 0.6s; box-shadow: 0 8px 32px rgba(181,67,58,0.08); }
+    .about-avatar:hover { box-shadow: 0 24px 64px rgba(123,48,88,0.18), 0 0 0 1px rgba(181,67,58,0.2); }
+    .avatar-glow { position: absolute; inset: 0; opacity: 0; background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(181,67,58,0.12) 0%, transparent 60%); transition: opacity 0.3s; }
+    .about-avatar:hover .avatar-glow { opacity: 1; }
+    .avatar-initials { font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--accent); opacity: 0.2; z-index: 1; }
+    .avatar-ring { position: absolute; inset: -1px; border-radius: 16px; background: linear-gradient(135deg, rgba(181,67,58,0.35), transparent, rgba(123,48,88,0.35)); padding: 1px; -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: destination-out; mask-composite: exclude; }
+    .about-text p { color: var(--muted); line-height: 1.95; margin-bottom: 1.3rem; font-size: 1rem; }
+    .about-text p strong { color: var(--text); font-weight: 500; }
+    .about-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.8rem; }
+    .tag { font-size: 0.78rem; padding: 0.35rem 0.9rem; border: 1px solid var(--border); border-radius: 100px; color: var(--muted); transition: all 0.3s; cursor: default; background: #fff; }
+    .tag:hover { border-color: var(--accent); color: var(--accent); background: rgba(181,67,58,0.06); transform: translateY(-2px); }
+
+    /* ── PROJECTS ── */
+    #projects { background: var(--bg); }
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+    .project-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; transition: box-shadow 0.4s; position: relative; overflow: hidden; transform-style: preserve-3d; will-change: transform; box-shadow: 0 2px 12px rgba(181,67,58,0.05); }
+    .project-card .card-glow { position: absolute; inset: 0; opacity: 0; pointer-events: none; border-radius: 12px; background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(181,67,58,0.06) 0%, transparent 60%); transition: opacity 0.4s; }
+    .project-card:hover .card-glow { opacity: 1; }
+    .project-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3)); transform: scaleX(0); transform-origin: left; transition: transform 0.5s cubic-bezier(0.23,1,0.32,1); }
+    .project-card:hover::before { transform: scaleX(1); }
+    .project-card:hover { box-shadow: 0 16px 48px rgba(181,67,58,0.12), 0 2px 8px rgba(0,0,0,0.06); }
+    .project-num { font-family: 'Playfair Display', serif; font-size: 3.5rem; color: rgba(181,67,58,0.07); position: absolute; top: 0.8rem; right: 1.2rem; font-weight: 900; line-height: 1; transition: color 0.4s, transform 0.4s; }
+    .project-card:hover .project-num { color: rgba(181,67,58,0.13); transform: translateX(-4px) scale(1.05); }
+    .project-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.7rem; position: relative; z-index: 1; color: var(--text); }
+    .project-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.75; position: relative; z-index: 1; }
+    .project-stack { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.2rem; position: relative; z-index: 1; }
+    .stack-tag { font-size: 0.72rem; padding: 0.25rem 0.7rem; background: rgba(123,48,88,0.08); color: var(--accent3); border-radius: 100px; border: 1px solid rgba(123,48,88,0.18); transition: all 0.3s; }
+    .stack-tag:hover { background: rgba(123,48,88,0.15); transform: translateY(-2px); }
+
+    /* ── INTERNSHIP ── */
+    #internship { background: var(--surface); }
+    .timeline { position: relative; padding-left: 2.5rem; }
+    .timeline::before { content: ''; position: absolute; left: 4px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, var(--accent) 10%, var(--accent3) 90%, transparent); }
+    .timeline-item { position: relative; margin-bottom: 3rem; padding-left: 2rem; opacity: 0; transform: translateX(-20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .timeline-item.visible { opacity: 1; transform: translateX(0); }
+    .timeline-dot { position: absolute; left: -2.1rem; top: 0.3rem; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(181,67,58,0.12), 0 0 16px rgba(181,67,58,0.25); transition: transform 0.3s, box-shadow 0.3s; }
+    .timeline-item:hover .timeline-dot { transform: scale(1.3); box-shadow: 0 0 0 6px rgba(181,67,58,0.12), 0 0 24px rgba(181,67,58,0.4); }
+    .timeline-period { font-size: 0.75rem; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; }
+    .timeline-role { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.2rem; color: var(--text); }
+    .timeline-company { color: var(--muted); font-size: 0.9rem; margin-bottom: 0.7rem; }
+    .timeline-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.8; }
+
+    /* ── ROLES ── */
+    #roles { background: var(--bg); }
+    .roles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+    .role-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s; transform-style: preserve-3d; box-shadow: 0 2px 12px rgba(181,67,58,0.05); }
+    .role-card::before { content: ''; position: absolute; inset: 0; border-radius: 12px; background: linear-gradient(135deg, rgba(123,48,88,0.04), rgba(181,67,58,0.02)); opacity: 0; transition: opacity 0.4s; }
+    .role-card:hover::before { opacity: 1; }
+    .role-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent3), var(--accent)); transform: scaleX(0); transform-origin: left; transition: transform 0.5s cubic-bezier(0.23,1,0.32,1); }
+    .role-card:hover::after { transform: scaleX(1); }
+    .role-card:hover { box-shadow: 0 16px 48px rgba(123,48,88,0.14); border-color: rgba(123,48,88,0.25); }
+    .role-icon { width: 52px; height: 52px; border-radius: 12px; margin-bottom: 1.2rem; background: linear-gradient(135deg, rgba(123,48,88,0.15), rgba(181,67,58,0.08)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; transition: transform 0.4s cubic-bezier(0.23,1,0.32,1), box-shadow 0.4s; position: relative; z-index: 1; }
+    .role-card:hover .role-icon { transform: rotate(-8deg) scale(1.1); box-shadow: 0 8px 20px rgba(123,48,88,0.25); }
+    .role-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 0.3rem; position: relative; z-index: 1; color: var(--text); }
+    .role-org { color: var(--accent); font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.7rem; position: relative; z-index: 1; }
+    .role-desc { color: var(--muted); font-size: 0.88rem; line-height: 1.8; position: relative; z-index: 1; }
+    .role-date { display: inline-block; margin-top: 1rem; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; border: 1px solid var(--border); padding: 0.2rem 0.7rem; border-radius: 100px; position: relative; z-index: 1; transition: all 0.3s; background: #fff; }
+    .role-card:hover .role-date { border-color: var(--accent); color: var(--accent); }
+
+    /* ── CERTIFICATIONS ── */
+    #certifications { background: var(--surface); }
+    .cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.2rem; }
+    .cert-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.4rem 1.6rem; display: flex; align-items: flex-start; gap: 1rem; transition: all 0.4s; position: relative; overflow: hidden; box-shadow: 0 2px 8px rgba(181,67,58,0.04); }
+    .cert-card::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, var(--accent), var(--accent3)); transform: scaleY(0); transform-origin: top; transition: transform 0.4s cubic-bezier(0.23,1,0.32,1); }
+    .cert-card:hover::after { transform: scaleY(1); }
+    .cert-card:hover { border-color: rgba(181,67,58,0.25); transform: translateX(6px); box-shadow: 0 8px 32px rgba(181,67,58,0.1); }
+    .cert-icon { width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0; font-size: 1.3rem; background: linear-gradient(135deg, rgba(181,67,58,0.12), rgba(123,48,88,0.08)); display: flex; align-items: center; justify-content: center; transition: transform 0.4s cubic-bezier(0.23,1,0.32,1); }
+    .cert-card:hover .cert-icon { transform: scale(1.15) rotate(5deg); }
+    .cert-info .cert-title { font-size: 0.95rem; font-weight: 500; margin-bottom: 0.25rem; color: var(--text); }
+    .cert-info .cert-issuer { color: var(--muted); font-size: 0.8rem; }
+    .cert-info .cert-year { display: inline-block; margin-top: 0.5rem; font-size: 0.7rem; color: var(--accent); letter-spacing: 0.1em; border: 1px solid rgba(181,67,58,0.25); padding: 0.15rem 0.6rem; border-radius: 100px; }
+
+    /* ── ACHIEVEMENTS ── */
+    #achievements { background: var(--bg); }
+    .achieve-list { display: flex; flex-direction: column; gap: 1rem; }
+    .achieve-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1.5rem; transition: all 0.4s cubic-bezier(0.23,1,0.32,1); position: relative; overflow: hidden; box-shadow: 0 2px 8px rgba(181,67,58,0.04); }
+    .achieve-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(to right, rgba(181,67,58,0.04), transparent); transition: width 0.5s cubic-bezier(0.23,1,0.32,1); }
+    .achieve-item:hover::before { width: 100%; }
+    .achieve-item:hover { border-color: rgba(181,67,58,0.25); transform: translateX(8px); box-shadow: -8px 0 28px rgba(181,67,58,0.07); }
+    .achieve-badge { width: 54px; height: 54px; border-radius: 50%; flex-shrink: 0; font-size: 1.4rem; background: linear-gradient(135deg, var(--accent), var(--accent3)); display: flex; align-items: center; justify-content: center; transition: transform 0.4s cubic-bezier(0.23,1,0.32,1), box-shadow 0.4s; position: relative; z-index: 1; }
+    .achieve-item:hover .achieve-badge { transform: scale(1.1) rotate(10deg); box-shadow: 0 8px 24px rgba(181,67,58,0.35); }
+    .achieve-text { position: relative; z-index: 1; }
+    .achieve-text .achieve-title { font-weight: 500; margin-bottom: 0.3rem; font-size: 1rem; color: var(--text); }
+    .achieve-text .achieve-desc { color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--surface); text-align: center; padding: 7rem 5%; }
+    .contact-inner { max-width: 540px; margin: 0 auto; }
+    .contact-email { font-family: 'Playfair Display', serif; font-size: clamp(1.3rem, 3vw, 2rem); color: var(--accent); margin: 1.8rem 0; display: inline-block; position: relative; transition: all 0.3s; text-decoration: none; }
+    .contact-email::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 0; height: 1px; background: var(--accent); transition: width 0.4s; }
+    .contact-email:hover::after { width: 100%; }
+    .contact-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+    .contact-link { color: var(--muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.6rem 1.4rem; border: 1px solid var(--border); border-radius: 100px; transition: all 0.3s; position: relative; overflow: hidden; background: #fff; cursor: pointer; }
+    .contact-link::before { content: ''; position: absolute; inset: 0; border-radius: 100px; background: rgba(181,67,58,0.06); transform: scaleX(0); transform-origin: left; transition: transform 0.35s; }
+    .contact-link:hover::before { transform: scaleX(1); }
+    .contact-link:hover { color: var(--accent); border-color: rgba(181,67,58,0.35); }
+    .contact-link.resume-btn {
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.contact-link.resume-btn:hover {
+  color: var(--accent);
+  border-color: rgba(181,67,58,0.35);
+}; cursor: pointer; }
+    .contact-link.resume-btn:hover { background: linear-gradient(135deg, rgba(123,48,88,0.2), rgba(181,67,58,0.15)); box-shadow: 0 4px 16px rgba(181,67,58,0.15); }
+
+    footer { text-align: center; padding: 2rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; position: relative; z-index: 1; background: var(--bg); }
+
+    /* ── SCROLL REVEALS ── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.23,1,0.32,1), transform 0.8s cubic-bezier(0.23,1,0.32,1); }
+    .reveal.from-left { transform: translateX(-30px); }
+    .reveal.from-right { transform: translateX(30px); }
+    .reveal.scale-in { transform: scale(0.92); }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── RESUME MODAL — FIXED HOVER ── */
+    /* The key fix: the modal uses cursor:auto so hovering works inside it */
+    #resume-modal {
+      position: fixed; inset: 0; z-index: 10000;
+      background: rgba(30,18,21,0.55); backdrop-filter: blur(16px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s cubic-bezier(0.23,1,0.32,1);
+      cursor: auto; /* FIXED: override cursor:none from body */
+    }
+    #resume-modal.open { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      width: min(90vw, 860px); max-height: 90vh;
+      display: flex; flex-direction: column;
+      transform: scale(0.92) translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.23,1,0.32,1);
+      overflow: hidden; box-shadow: 0 32px 80px rgba(30,18,21,0.25);
+      cursor: auto;
+    }
+    #resume-modal.open .modal-box { transform: scale(1) translateY(0); }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 1.6rem; border-bottom: 1px solid var(--border);
+      flex-shrink: 0; background: #fff;
+    }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--accent); }
+    .modal-actions { display: flex; gap: 0.8rem; align-items: center; }
+    .modal-download {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.55rem 1.3rem; background: var(--accent); color: #fff;
+      font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.82rem;
+      border: none; border-radius: 100px; cursor: pointer; text-decoration: none;
+      transition: all 0.3s; letter-spacing: 0.04em;
+    }
+    .modal-download:hover { background: #9c3a32; box-shadow: 0 6px 20px rgba(181,67,58,0.35); transform: translateY(-1px); }
+    .modal-close {
+      width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; transition: all 0.3s; line-height: 1;
+    }
+    .modal-close:hover { border-color: var(--accent); color: var(--accent); background: rgba(181,67,58,0.07); transform: rotate(90deg); }
+    .modal-body { flex: 1; overflow: auto; padding: 1.5rem; display: flex; align-items: flex-start; justify-content: center; background: var(--surface); }
+    .modal-pdf { width: 100%; min-height: 500px; border: none; border-radius: 8px; background: var(--card); }
+    .pdf-placeholder {
+      width: 100%; min-height: 500px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1.2rem;
+      border: 2px dashed var(--border); border-radius: 8px; color: var(--muted); text-align: center; padding: 2rem; background: #fff;
+    }
+    .pdf-placeholder .pdf-icon { font-size: 3rem; }
+    .pdf-placeholder p { font-size: 0.9rem; line-height: 1.7; max-width: 320px; }
+    .pdf-placeholder code { font-size: 0.78rem; background: rgba(181,67,58,0.08); color: var(--accent); padding: 0.15rem 0.5rem; border-radius: 4px; }
+
+    @media (max-width: 900px) { .about-grid { grid-template-columns: 1fr; } .about-avatar { max-width: 220px; margin: 0 auto; } .hero-stats { display: none; } }
+    @media (max-width: 600px) { .nav-links { display: none; } body { cursor: auto; } #cursor, #cursor-ring { display: none; } }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="particle-canvas"></canvas>
+<div class="ripple-container" id="ripple-container"></div>
+
+<!-- RESUME MODAL -->
+<div id="resume-modal" role="dialog" aria-modal="true" aria-label="Resume Viewer">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">📄 Hema Kanikkai Tresa A — Resume</span>
+      <div class="modal-actions">
+        <a id="modal-download-btn" href="resume.pdf" download="Hema_Kanikkai_Tresa_Resume.pdf" class="modal-download">
+          ⬇ Download PDF
+        </a>
+        <button class="modal-close" id="modal-close-btn" aria-label="Close">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div class="pdf-placeholder" id="pdf-placeholder">
+        <div class="pdf-icon">📄</div>
+        <p>To show your resume here, upload your PDF and replace <code>resume.pdf</code> in the HTML with your file path.</p>
+        <p style="font-size:0.8rem;margin-top:0.5rem;">The <strong style="color:var(--text)">Download</strong> button above will also work once your file is linked.</p>
+      </div>
+      <!-- Uncomment when PDF is ready: -->
+      <!-- <iframe class="modal-pdf" src="resume.pdf#toolbar=0" id="pdf-iframe"></iframe> -->
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">HKT</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#internship">Internship</a></li>
+    <li><a href="#roles">Roles</a></li>
+    <li><a href="#certifications">Certifications</a></li>
+    <li><a href="#achievements">Achievements</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag"><span class="hero-tag-dot"></span>MCA Student · Computer Applications</div>
+    <h1 class="hero-name">
+      <span class="hero-name-line">Hema</span>
+      <span class="hero-name-line"><span id="accent-name">Kanikkai Tresa A</span></span>
+    </h1>
+    <p class="hero-subtitle">Aspiring software developer passionate about building meaningful digital experiences through code, creativity, and continuous learning.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn-primary magnetic">View My Work</a>
+      <a href="#contact" class="btn-outline magnetic">Get In Touch</a>
+      <button class="btn-resume magnetic" id="hero-resume-btn">📄 View Resume</button>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-card reveal scale-in"><div class="stat-number" data-count="3">0</div><div class="stat-label">Projects</div></div>
+    <div class="stat-card reveal scale-in" style="transition-delay:0.1s"><div class="stat-number" data-count="4">0</div><div class="stat-label">Certifications</div></div>
+    <div class="stat-card reveal scale-in" style="transition-delay:0.2s"><div class="stat-number" data-count="3">0</div><div class="stat-label">Achievements</div></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <p class="section-label reveal">Who I Am</p>
+  <h2 class="section-title reveal">About Me</h2>
+  <div class="about-grid">
+    <div class="about-avatar reveal from-left tilt-card">
+      <div class="avatar-glow"></div>
+      <span class="avatar-initials">HKT</span>
+      <div class="avatar-ring"></div>
+    </div>
+    <div class="about-text reveal from-right">
+      <p>Hi! I'm <strong>Hema Kanikkai Tresa A</strong>, a dedicated MCA (Master of Computer Applications) student with a strong interest in software development, web technologies, and problem-solving.</p>
+      <p>I enjoy turning complex problems into elegant, user-friendly solutions. My academic journey has equipped me with a solid foundation in programming, databases, and modern frameworks.</p>
+      <p>When I'm not coding, I'm exploring new technologies, taking online courses, or participating in academic events to sharpen my skills.</p>
+      <div class="about-tags">
+        <span class="tag">Python</span><span class="tag">Java</span><span class="tag">HTML/CSS</span>
+        <span class="tag">JavaScript</span><span class="tag">SQL</span><span class="tag">React</span>
+        <span class="tag">Problem Solving</span><span class="tag">Data Structures</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <p class="section-label reveal">What I've Built</p>
+  <h2 class="section-title reveal">Projects</h2>
+  <div class="projects-grid">
+    <div class="project-card reveal tilt-card" style="transition-delay:0s">
+      <div class="card-glow"></div><div class="project-num">01</div>
+      <h3 class="project-title">Student Management System</h3>
+      <p class="project-desc">A full-featured web application to manage student records, attendance, and academic performance with role-based access for admin and faculty.</p>
+      <div class="project-stack"><span class="stack-tag">Java</span><span class="stack-tag">MySQL</span><span class="stack-tag">HTML/CSS</span></div>
+    </div>
+    <div class="project-card reveal tilt-card" style="transition-delay:0.12s">
+      <div class="card-glow"></div><div class="project-num">02</div>
+      <h3 class="project-title">E-Commerce Website</h3>
+      <p class="project-desc">Designed and developed a responsive e-commerce front end with product listing, cart functionality, and a clean checkout flow.</p>
+      <div class="project-stack"><span class="stack-tag">HTML</span><span class="stack-tag">CSS</span><span class="stack-tag">JavaScript</span></div>
+    </div>
+    <div class="project-card reveal tilt-card" style="transition-delay:0.24s">
+      <div class="card-glow"></div><div class="project-num">03</div>
+      <h3 class="project-title">Library Management System</h3>
+      <p class="project-desc">Desktop application for managing book inventory, issue/return tracking, and member management with an intuitive GUI.</p>
+      <div class="project-stack"><span class="stack-tag">Python</span><span class="stack-tag">Tkinter</span><span class="stack-tag">SQLite</span></div>
+    </div>
+  </div>
+  <p style="color:var(--muted);font-size:0.82rem;margin-top:1.5rem;font-style:italic;">* Replace with your actual projects</p>
+</section>
+
+<!-- INTERNSHIP -->
+<section id="internship">
+  <p class="section-label reveal">Experience</p>
+  <h2 class="section-title reveal">Internship</h2>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <p class="timeline-period">Jun 2024 – Aug 2024</p>
+      <h3 class="timeline-role">Web Development Intern</h3>
+      <p class="timeline-company">Company Name, Location</p>
+      <p class="timeline-desc">Worked on developing responsive web pages, collaborated with the design team, and assisted in building RESTful APIs. Gained hands-on experience with real-world project workflows and version control using Git.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <p class="timeline-period">Dec 2023 – Jan 2024</p>
+      <h3 class="timeline-role">Python Programming Intern</h3>
+      <p class="timeline-company">Organization Name, Location</p>
+      <p class="timeline-desc">Completed an internship focused on Python scripting, data handling, and automation tasks. Developed small utilities and scripts to streamline repetitive workflows.</p>
+    </div>
+  </div>
+  <p style="color:var(--muted);font-size:0.82rem;margin-top:1.5rem;font-style:italic;">* Replace with your actual internship details</p>
+</section>
+
+<!-- ROLES -->
+<section id="roles">
+  <p class="section-label reveal">Responsibilities</p>
+  <h2 class="section-title reveal">Academic &amp; Professional Roles</h2>
+  <div class="roles-grid">
+    <div class="role-card reveal tilt-card">
+      <div class="role-icon">📋</div>
+      <h3 class="role-title">External Examiner</h3>
+      <p class="role-org">Institution / University Name</p>
+      <p class="role-desc">Served as an external examiner for practical / viva examinations. Responsible for evaluating student performance, maintaining academic integrity, and providing fair, unbiased assessments in accordance with university guidelines.</p>
+      <span class="role-date">Month Year</span>
+    </div>
+  </div>
+  <p style="color:var(--muted);font-size:0.82rem;margin-top:1.5rem;font-style:italic;">* Update with the actual institution name, subject, and date</p>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications">
+  <p class="section-label reveal">Credentials</p>
+  <h2 class="section-title reveal">Certifications</h2>
+  <div class="cert-grid">
+
+    <div class="cert-card reveal" style="transition-delay:0s">
+      <div style="padding:14px 16px 10px;display:flex;align-items:center;gap:10px;">
+        <div class="cert-icon">🏅</div>
+        <div class="cert-info">
+          <p class="cert-title">NPTEL Elite Certification</p>
+          <p class="cert-issuer">Database Management Systems · IIT</p>
+        </div>
+      </div>
+      <div style="width:100%;height:130px;overflow:hidden;border-top:1px solid var(--border);">
+        <iframe src="certificates/NPTEL_cert.pdf" style="width:100%;height:200px;border:none;margin-top:-20px;pointer-events:none;" scrolling="no"></iframe>
+      </div>
+      <div style="padding:8px 16px 12px;display:flex;justify-content:space-between;align-items:center;">
+        <span class="cert-year">2024</span>
+        <a href="certificates/NPTEL_cert.pdf" target="_blank" style="font-size:0.72rem;color:var(--muted);text-decoration:none;letter-spacing:0.05em;">View PDF ↗</a>
+      </div>
+    </div>
+
+    <div class="cert-card reveal" style="transition-delay:0.1s">
+      <div style="padding:14px 16px 10px;display:flex;align-items:center;gap:10px;">
+        <div class="cert-icon">🤖</div>
+        <div class="cert-info">
+          <p class="cert-title">Open AI Tools Certification</p>
+          <p class="cert-issuer">AI Tools &amp; Applications Seminar</p>
+        </div>
+      </div>
+      <div style="width:100%;height:130px;overflow:hidden;border-top:1px solid var(--border);">
+        <iframe src="Conference_SJC.pdf" style="width:100%;height:200px;border:none;margin-top:-20px;pointer-events:none;" scrolling="no"></iframe>
+      </div>
+      <div style="padding:8px 16px 12px;display:flex;justify-content:space-between;align-items:center;">
+        <span class="cert-year">2023</span>
+        <a href="Conference_SJC.pdf" target="_blank" style="font-size:0.72rem;color:var(--muted);text-decoration:none;letter-spacing:0.05em;">View PDF ↗</a>
+      </div>
+    </div>
+
+    <div class="cert-card reveal" style="transition-delay:0.2s">
+      <div style="padding:14px 16px 10px;display:flex;align-items:center;gap:10px;">
+        <div class="cert-icon">💻</div>
+        <div class="cert-info">
+          <p class="cert-title">Frontend Web Development</p>
+          <p class="cert-issuer">HTML &amp; CSS · Fantasy Solution Internship</p>
+        </div>
+      </div>
+      <div style="width:100%;height:130px;overflow:hidden;border-top:1px solid var(--border);">
+        <iframe src="certificates/internship_letter.pdf" style="width:100%;height:200px;border:none;margin-top:-20px;pointer-events:none;" scrolling="no"></iframe>
+      </div>
+      <div style="padding:8px 16px 12px;display:flex;justify-content:space-between;align-items:center;">
+        <span class="cert-year">2024</span>
+        <a href="certificates/internship_letter.pdf" target="_blank" style="font-size:0.72rem;color:var(--muted);text-decoration:none;letter-spacing:0.05em;">View PDF ↗</a>
+      </div>
+    </div>
+
+    <div class="cert-card reveal" style="transition-delay:0.3s">
+      <div style="padding:14px 16px 10px;display:flex;align-items:center;gap:10px;">
+        <div class="cert-icon">🔨</div>
+        <div class="cert-info">
+          <p class="cert-title">PITCHFest'26 Certificate</p>
+          <p class="cert-issuer">AI Solutions Pitch Competition</p>
+        </div>
+      </div>
+      <div style="width:100%;height:130px;overflow:hidden;border-top:1px solid var(--border);">
+        <iframe src="nacotech_competition_certificate.pdf" style="width:100%;height:200px;border:none;margin-top:-20px;pointer-events:none;" scrolling="no"></iframe>
+      </div>
+      <div style="padding:8px 16px 12px;display:flex;justify-content:space-between;align-items:center;">
+        <span class="cert-year">2026</span>
+        <a href="nacotech_competition_certificate.pdf" target="_blank" style="font-size:0.72rem;color:var(--muted);text-decoration:none;letter-spacing:0.05em;">View PDF ↗</a>
+      </div>
+    </div>
+
+    <div class="cert-card reveal" style="transition-delay:0.4s">
+      <div style="padding:14px 16px 10px;display:flex;align-items:center;gap:10px;">
+        <div class="cert-icon">🌐</div>
+        <div class="cert-info">
+          <p class="cert-title">International Conference Certificate</p>
+          <p class="cert-issuer">IC-AETS 2026 · Published Author</p>
+        </div>
+      </div>
+      <div style="width:100%;height:130px;overflow:hidden;border-top:1px solid var(--border);">
+        <iframe src="sjc_indep_singing.pdf" style="width:100%;height:200px;border:none;margin-top:-20px;pointer-events:none;" scrolling="no"></iframe>
+      </div>
+      <div style="padding:8px 16px 12px;display:flex;justify-content:space-between;align-items:center;">
+        <span class="cert-year">2026</span>
+        <a href="sjc_indep_singing.pdf" target="_blank" style="font-size:0.72rem;color:var(--muted);text-decoration:none;letter-spacing:0.05em;">View PDF ↗</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements">
+  <p class="section-label reveal">Milestones</p>
+  <h2 class="section-title reveal">Achievements</h2>
+  <div class="projects-grid">
+
+    <div class="project-card reveal tilt-card" style="transition-delay:0s;padding:0;overflow:hidden;">
+      <div class="card-glow"></div>
+      <div style="width:100%;height:150px;overflow:hidden;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;position:relative;">
+        <iframe src="nacotech_competition_certificate.pdf" style="width:100%;height:240px;border:none;margin-top:-30px;pointer-events:none;" scrolling="no"></iframe>
+      </div>
+      <div style="padding:1.5rem 2rem 1rem;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent3));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🏆</div>
+          <span style="font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);background:rgba(181,67,58,0.08);border:1px solid rgba(181,67,58,0.2);padding:3px 10px;border-radius:100px;">Competition</span>
+        </div>
+        <h3 class="project-title">Nacotech Competition Winner</h3>
+        <p class="project-desc">Secured a top position at the Nacotech inter-college competition, competing against peers in a technical challenge demonstrating problem-solving skills under pressure.</p>
+      </div>
+      <div style="padding:0 2rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:0.7rem;color:var(--accent);border:1px solid rgba(181,67,58,0.25);padding:2px 10px;border-radius:100px;">2024</span>
+        <a href="nacotech_competition_certificate.pdf" target="_blank" style="font-size:0.75rem;color:var(--muted);text-decoration:none;letter-spacing:0.05em;transition:color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">View Certificate ↗</a>
+      </div>
+    </div>
+
+    <div class="project-card reveal tilt-card" style="transition-delay:0.12s;padding:0;overflow:hidden;">
+      <div class="card-glow"></div>
+      <div style="width:100%;height:150px;overflow:hidden;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;position:relative;">
+        <iframe src="Conference_SJC.pdf" style="width:100%;height:240px;border:none;margin-top:-30px;pointer-events:none;" scrolling="no"></iframe>
+      </div>
+      <div style="padding:1.5rem 2rem 1rem;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent3));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🎓</div>
+          <span style="font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);background:rgba(181,67,58,0.08);border:1px solid rgba(181,67,58,0.2);padding:3px 10px;border-radius:100px;">Conference</span>
+        </div>
+        <h3 class="project-title">St. Joseph's College Conference</h3>
+        <p class="project-desc">Participated in an academic conference at St. Joseph's College (Autonomous), Tiruchirappalli. Recognized for contribution and active engagement in the event.</p>
+      </div>
+      <div style="padding:0 2rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:0.7rem;color:var(--accent);border:1px solid rgba(181,67,58,0.25);padding:2px 10px;border-radius:100px;">2023</span>
+        <a href="Conference_SJC.pdf" target="_blank" style="font-size:0.75rem;color:var(--muted);text-decoration:none;letter-spacing:0.05em;transition:color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">View Certificate ↗</a>
+      </div>
+    </div>
+
+    <div class="project-card reveal tilt-card" style="transition-delay:0.24s;padding:0;overflow:hidden;">
+      <div class="card-glow"></div>
+      <div style="width:100%;height:150px;overflow:hidden;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;position:relative;">
+        <iframe src="sjc_indep_singing.pdf" style="width:100%;height:240px;border:none;margin-top:-30px;pointer-events:none;" scrolling="no"></iframe>
+      </div>
+      <div style="padding:1.5rem 2rem 1rem;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent3));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🎵</div>
+          <span style="font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);background:rgba(181,67,58,0.08);border:1px solid rgba(181,67,58,0.2);padding:3px 10px;border-radius:100px;">Cultural</span>
+        </div>
+        <h3 class="project-title">Independent Singing — SJC Event</h3>
+        <p class="project-desc">Performed and received recognition in an independent singing event at St. Joseph's College, showcasing creative talent beyond academics.</p>
+      </div>
+      <div style="padding:0 2rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:0.7rem;color:var(--accent);border:1px solid rgba(181,67,58,0.25);padding:2px 10px;border-radius:100px;">2023</span>
+        <a href="sjc_indep_singing.pdf" target="_blank" style="font-size:0.75rem;color:var(--muted);text-decoration:none;letter-spacing:0.05em;transition:color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">View Certificate ↗</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <p class="section-label reveal" style="justify-content:center;">Let's Connect</p>
+    <h2 class="section-title reveal" style="border:none;text-align:center;">Get In Touch</h2>
+    <p class="reveal" style="color:var(--muted);line-height:1.8;">I'm open to opportunities, collaborations, and conversations. Feel free to reach out!</p>
+    <a href="mailto:hema@email.com" class="contact-email reveal">tresaalbert03@gmail.com</a>
+    <div class="contact-links reveal">
+      <a href="https://www.linkedin.com/in/hema-kanikkai-tresa/" class="contact-link">LinkedIn</a>
+      <a href="https://github.com/Tresaalbert" class="contact-link">GitHub</a>
+      <button class="contact-link resume-btn" id="contact-resume-btn">📄 Resume</button>
+    </div>
+  </div>
+</section>
+
+<footer><p>Designed &amp; built by Hema Kanikkai Tresa A &nbsp;·&nbsp; </p></footer>
+
+<script>
+/* ── CURSOR ── */
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursor-ring');
+let mx = window.innerWidth/2, my = window.innerHeight/2;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  ring.style.left   = mx + 'px'; ring.style.top   = my + 'px';
+});
+
+/* ── CLICK RIPPLE + SPARKS ── */
+const rippleCont = document.getElementById('ripple-container');
+document.addEventListener('click', e => {
+  const r = document.createElement('div');
+  r.className = 'ripple';
+  const size = Math.random() * 120 + 80;
+  r.style.cssText = `left:${e.clientX}px;top:${e.clientY}px;width:${size}px;height:${size}px;`;
+  rippleCont.appendChild(r);
+  r.addEventListener('animationend', () => r.remove());
+  const colors = ['#b5433a','#7b3058','#9c6b3c','#d4a574'];
+  for (let i = 0; i < 10; i++) {
+    const spark = document.createElement('div');
+    spark.className = 'spark';
+    const angle = (Math.PI * 2 * i) / 10 + Math.random() * 0.4;
+    const dist  = 40 + Math.random() * 60;
+    spark.style.cssText = `left:${e.clientX}px;top:${e.clientY}px;background:${colors[Math.floor(Math.random()*colors.length)]};--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;--dur:${0.4+Math.random()*0.4}s;`;
+    document.body.appendChild(spark);
+    spark.addEventListener('animationend', () => spark.remove());
+  }
+});
+
+/* ── PARTICLE CANVAS ── */
+const canvas = document.getElementById('particle-canvas');
+const ctx    = canvas.getContext('2d');
+let W, H, particles = [];
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random()*W; this.y = Math.random()*H;
+    this.r = Math.random()*1.2+0.3;
+    this.vx = (Math.random()-0.5)*0.3; this.vy = (Math.random()-0.5)*0.3;
+    this.life = Math.random(); this.maxLife = 0.4+Math.random()*0.6;
+    const palette = ['rgba(181,67,58,','rgba(123,48,88,','rgba(156,107,60,'];
+    this.color = palette[Math.floor(Math.random()*palette.length)];
+  }
+  update() {
+    this.x += this.vx + (mx-W/2)*0.00012;
+    this.y += this.vy + (my-H/2)*0.00012;
+    this.life += 0.003;
+    if (this.life > this.maxLife || this.x<0||this.x>W||this.y<0||this.y>H) this.reset();
+  }
+  draw() {
+    const a = Math.sin((this.life/this.maxLife)*Math.PI)*0.35;
+    ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fillStyle = this.color+a+')'; ctx.fill();
+  }
+}
+for (let i=0;i<120;i++) particles.push(new Particle());
+function animParticles() { ctx.clearRect(0,0,W,H); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animParticles); }
+animParticles();
+
+/* ── SCROLL REVEAL ── */
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+const timelineObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); timelineObs.unobserve(e.target); } });
+}, { threshold: 0.15 });
+document.querySelectorAll('.timeline-item').forEach((el,i) => { el.style.transitionDelay=i*0.15+'s'; timelineObs.observe(el); });
+
+/* ── COUNTER ── */
+function animCount(el, target) {
+  let start=0; const dur=1200;
+  const step = ts => {
+    if (!start) start=ts;
+    const prog = Math.min((ts-start)/dur,1);
+    el.textContent = Math.floor(prog*target)+(prog<1?'':'+');
+    if (prog<1) requestAnimationFrame(step); else el.textContent=target+'+';
+  };
+  requestAnimationFrame(step);
+}
+const countObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { animCount(e.target,parseInt(e.target.dataset.count)); countObs.unobserve(e.target); } });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-count]').forEach(el => countObs.observe(el));
+
+/* ── 3D TILT ── */
+document.querySelectorAll('.tilt-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect=card.getBoundingClientRect();
+    const dx=(e.clientX-rect.left-rect.width/2)/(rect.width/2);
+    const dy=(e.clientY-rect.top-rect.height/2)/(rect.height/2);
+    card.style.transform=`perspective(800px) rotateY(${dx*8}deg) rotateX(${-dy*8}deg) translateZ(10px)`;
+    card.style.setProperty('--mx',((e.clientX-rect.left)/rect.width*100)+'%');
+    card.style.setProperty('--my',((e.clientY-rect.top)/rect.height*100)+'%');
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform='';
+    card.style.transition='transform 0.6s cubic-bezier(0.23,1,0.32,1), box-shadow 0.4s';
+    setTimeout(()=>card.style.transition='',600);
+  });
+});
+
+/* ── MAGNETIC BUTTONS ── */
+document.querySelectorAll('.magnetic').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const rect=btn.getBoundingClientRect();
+    const dx=e.clientX-(rect.left+rect.width/2);
+    const dy=e.clientY-(rect.top+rect.height/2);
+    btn.style.transform=`translate(${dx*0.25}px,${dy*0.25}px)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform='';
+    btn.style.transition='transform 0.5s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s';
+    setTimeout(()=>btn.style.transition='',500);
+  });
+});
+
+/* ── NAV SCROLL ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY>60);
+  document.getElementById('progress-bar').style.width=(window.scrollY/(document.body.scrollHeight-window.innerHeight)*100)+'%';
+});
+
+/* ── HERO NAME CHARS ── */
+(function() {
+  const el = document.getElementById('accent-name');
+  const text = el.textContent;
+  el.innerHTML='';
+  [...text].forEach((ch,i) => {
+    if (ch===' ') { el.appendChild(document.createTextNode(' ')); return; }
+    const span=document.createElement('span');
+    span.className='char'; span.textContent=ch;
+    span.style.animationDelay=(0.4+i*0.05)+'s';
+    el.appendChild(span);
+  });
+})();
+
+/* ── RESUME MODAL ── */
+const modal    = document.getElementById('resume-modal');
+const closeBtn = document.getElementById('modal-close-btn');
+
+function openModal() {
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  /* Temporarily hide custom cursor inside modal for clean hover */
+  cursor.style.display = 'none';
+  ring.style.display   = 'none';
+}
+function closeModal() {
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+  cursor.style.display = '';
+  ring.style.display   = '';
+}
+
+document.getElementById('hero-resume-btn').addEventListener('click', openModal);
+document.getElementById('contact-resume-btn').addEventListener('click', openModal);
+closeBtn.addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
