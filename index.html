@@ -302,14 +302,9 @@
         <button class="modal-close" id="modal-close-btn" aria-label="Close">✕</button>
       </div>
     </div>
-    <div class="modal-body" id="modal-body">
-      <div class="pdf-placeholder" id="pdf-placeholder">
-        <div class="pdf-icon">📄</div>
-        <p>To show your resume here, upload your PDF and replace <code>resume.pdf</code> in the HTML with your file path.</p>
-        <p style="font-size:0.8rem;margin-top:0.5rem;">The <strong style="color:var(--text)">Download</strong> button above will also work once your file is linked.</p>
-      </div>
-      <!-- Uncomment when PDF is ready: -->
-      <iframe class="modal-pdf" src="resume.pdf#toolbar=0" id="pdf-iframe"></iframe>
+    <div class="modal-body" id="modal-body" style="padding:0;">
+      <iframe class="modal-pdf" src="resume.pdf#toolbar=0" id="pdf-iframe" style="width:100%;height:80vh;border:none;border-radius:0 0 16px 16px;"></iframe>
+    </div>
     </div>
   </div>
 </div>
