@@ -105,12 +105,12 @@
 
     /* ── ABOUT ── */
     #about { background: var(--surface); }
-    .about-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 5rem; align-items: center; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; align-items: center; }
     .about-avatar { width: 100%; aspect-ratio: 3/4; max-width: 320px; border-radius: 16px; overflow: hidden; background: var(--card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; position: relative; transition: box-shadow 0.6s; box-shadow: 0 8px 32px rgba(181,67,58,0.08); }
     .about-avatar:hover { box-shadow: 0 24px 64px rgba(123,48,88,0.18), 0 0 0 1px rgba(181,67,58,0.2); }
     .avatar-glow { position: absolute; inset: 0; opacity: 0; background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(181,67,58,0.12) 0%, transparent 60%); transition: opacity 0.3s; }
     .about-avatar:hover .avatar-glow { opacity: 1; }
-    .avatar-initials { font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--accent); opacity: 0.2; z-index: 1; }
+    .avatar-initials { font-family: 'Playfair Display', serif; font-size: 4rem; color: var(--accent); opacity: 0.2; z-index: 1; }
     .avatar-ring { position: absolute; inset: -1px; border-radius: 16px; background: linear-gradient(135deg, rgba(181,67,58,0.35), transparent, rgba(123,48,88,0.35)); padding: 1px; -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: destination-out; mask-composite: exclude; }
     .about-text p { color: var(--muted); line-height: 1.95; margin-bottom: 1.3rem; font-size: 1rem; }
     .about-text p strong { color: var(--text); font-weight: 500; }
@@ -192,7 +192,7 @@
     .achieve-text .achieve-desc { color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
 
     /* ── CONTACT ── */
-    #contact { background: var(--surface); text-align: center; padding: 7rem 5%; }
+    #contact { background: var(--surface); text-align: center; padding: 4rem 5%; }
     .contact-inner { max-width: 540px; margin: 0 auto; }
     .contact-email { font-family: 'Playfair Display', serif; font-size: clamp(1.3rem, 3vw, 2rem); color: var(--accent); margin: 1.8rem 0; display: inline-block; position: relative; transition: all 0.3s; text-decoration: none; }
     .contact-email::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 0; height: 1px; background: var(--accent); transition: width 0.4s; }
