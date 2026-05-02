@@ -723,12 +723,14 @@ document.querySelectorAll('.timeline-item').forEach((el,i) => { el.style.transit
 
 /* ── COUNTER ── */
 function animCount(el, target) {
-  let start=0; const dur=1200;
+  let start = 0;
+  const dur = 1000;
   const step = ts => {
-    if (!start) start=ts;
-    const prog = Math.min((ts-start)/dur,1);
-    el.textContent = Math.floor(prog*target)+(prog<1?'':'+');
-    if (prog<1) requestAnimationFrame(step); else el.textContent=target+'+';
+    if (!start) start = ts;
+    const prog = Math.min((ts - start) / dur, 1);
+    el.textContent = Math.floor(prog * target);
+    if (prog < 1) requestAnimationFrame(step);
+    else el.textContent = target + '+';
   };
   requestAnimationFrame(step);
 }
