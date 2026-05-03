@@ -319,7 +319,7 @@
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   opacity:0;pointer-events:none;transition:opacity 0.4s cubic-bezier(0.23,1,0.32,1);cursor:auto;">
   <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;
-    width:min(92vw,760px);max-height:90vh;display:flex;flex-direction:column;
+    width:80vw;max-height:88vh;display:flex;flex-direction:column;
     transform:scale(0.92) translateY(20px);transition:transform 0.4s cubic-bezier(0.23,1,0.32,1);
     overflow:hidden;box-shadow:0 32px 80px rgba(30,18,21,0.28);" id="image-modal-box">
     <div style="display:flex;justify-content:space-between;align-items:center;
@@ -441,19 +441,29 @@
   <p class="section-label reveal">Experience</p>
   <h2 class="section-title reveal">Internship</h2>
   <div class="timeline">
-    <div class="timeline-item">
-      <div class="timeline-item" style="position:relative;">
-  <div class="timeline-dot"></div>
-  <p class="timeline-period">May 2026 – Present</p>
-<h3 class="timeline-role">AI/ML Intern <button onclick="openImageModal('images/gamma-cert-1.jpg','Gamma Analytics Internship Certificate')" style="background:none;border:none;cursor:pointer;color:var(--accent);font-size:1rem;vertical-align:middle;letter-spacing:0.05em;font-family:'DM Sans',sans-serif;">View Certificate ↗</button></h3>
-  <p class="timeline-desc">Worked on developing responsive web pages, collaborated with the design team, and assisted in building RESTful APIs. Gained hands-on experience with real-world project workflows and version control using Git.</p>
-</div>
-<div class="timeline-item" style="position:relative;">
-  <div class="timeline-dot"></div>
-  <p class="timeline-period">Nov 2024 – Mar 2025</p>
-<h3 class="timeline-role">Web Development Project Intern <button onclick="openImageModal('images/elysium-cert.jpg','Elysium Technologies Internship Certificate')" style="background:none;border:none;cursor:pointer;color:var(--accent);font-size:0.75rem;vertical-align:middle;letter-spacing:0.05em;font-family:'DM Sans',sans-serif;">View Certificate ↗</button></h3>
-  <p class="timeline-desc">Completed an internship focused on Python scripting, data handling, and automation tasks. Developed small utilities and scripts to streamline repetitive workflows.</p>
-</div>
+
+    <div class="timeline-item" style="position:relative;">
+      <div class="timeline-dot"></div>
+      <p class="timeline-period">May 2026 – Present</p>
+      <h3 class="timeline-role">AI/ML Intern</h3>
+      <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:0.4rem;margin-bottom:0.5rem;">
+        <button onclick="openImageModal('images/gamma-cert-1.jpg','Gamma Analytics Internship Certificate')" style="background:none;border:1px solid rgba(181,67,58,0.35);border-radius:100px;cursor:pointer;color:var(--accent);font-size:0.75rem;padding:0.25rem 0.85rem;letter-spacing:0.05em;font-family:'DM Sans',sans-serif;transition:all 0.3s;" onmouseover="this.style.background='rgba(181,67,58,0.08)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='none';this.style.borderColor='rgba(181,67,58,0.35)'">View Certificate ↗</button>
+        <button onclick="openDocModal('doc/gamma-intern-doc.pdf','Gamma Analytics Project Document')" style="background:none;border:1px solid rgba(123,48,88,0.35);border-radius:100px;cursor:pointer;color:var(--accent3);font-size:0.75rem;padding:0.25rem 0.85rem;letter-spacing:0.05em;font-family:'DM Sans',sans-serif;transition:all 0.3s;" onmouseover="this.style.background='rgba(123,48,88,0.08)';this.style.borderColor='var(--accent3)'" onmouseout="this.style.background='none';this.style.borderColor='rgba(123,48,88,0.35)'">View Project Doc ↗</button>
+      </div>
+      <p class="timeline-desc">Worked on developing responsive web pages, collaborated with the design team, and assisted in building RESTful APIs. Gained hands-on experience with real-world project workflows and version control using Git.</p>
+    </div>
+
+    <div class="timeline-item" style="position:relative;">
+      <div class="timeline-dot"></div>
+      <p class="timeline-period">Nov 2024 – Mar 2025</p>
+      <h3 class="timeline-role">Web Development Project Intern</h3>
+      <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:0.4rem;margin-bottom:0.5rem;">
+        <button onclick="openImageModal('images/elysium-cert.jpg','Elysium Technologies Internship Certificate')" style="background:none;border:1px solid rgba(181,67,58,0.35);border-radius:100px;cursor:pointer;color:var(--accent);font-size:0.75rem;padding:0.25rem 0.85rem;letter-spacing:0.05em;font-family:'DM Sans',sans-serif;transition:all 0.3s;" onmouseover="this.style.background='rgba(181,67,58,0.08)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='none';this.style.borderColor='rgba(181,67,58,0.35)'">View Certificate ↗</button>
+        <button onclick="openDocModal('doc/elysium-iern-doc.pdf','Elysium Technologies Project Document')" style="background:none;border:1px solid rgba(123,48,88,0.35);border-radius:100px;cursor:pointer;color:var(--accent3);font-size:0.75rem;padding:0.25rem 0.85rem;letter-spacing:0.05em;font-family:'DM Sans',sans-serif;transition:all 0.3s;" onmouseover="this.style.background='rgba(123,48,88,0.08)';this.style.borderColor='var(--accent3)'" onmouseout="this.style.background='none';this.style.borderColor='rgba(123,48,88,0.35)'">View Project Doc ↗</button>
+      </div>
+      <p class="timeline-desc">Completed an internship focused on Python scripting, data handling, and automation tasks. Developed small utilities and scripts to streamline repetitive workflows.</p>
+    </div>
+
   </div>
 </section>
 
@@ -917,6 +927,31 @@ function openImageModal(src, title) {
   ring.style.display = 'none';
 }
 
+function openDocModal(src, title) {
+  imgEl.src = '';
+  imgEl.style.display = 'none';
+  const oldIframe = document.getElementById('doc-modal-iframe');
+  if (oldIframe) oldIframe.remove();
+  const iframe = document.createElement('iframe');
+  iframe.id = 'doc-modal-iframe';
+  iframe.src = src;
+  iframe.style.cssText = 'width:100%;height:calc(88vh - 80px);border:none;border-radius:8px;';
+  imgEl.parentNode.appendChild(iframe);
+  imgTitle.textContent = '📄 ' + title;
+  imgDownload.href = src;
+  imgDownload.download = title.replace(/[^a-z0-9]/gi, '_') + '.pdf';
+  imgModal.style.opacity = '0';
+  imgModal.style.pointerEvents = 'all';
+  imgModalBox.style.transform = 'scale(0.92) translateY(20px)';
+  requestAnimationFrame(() => {
+    imgModal.style.opacity = '1';
+    imgModalBox.style.transform = 'scale(1) translateY(0)';
+  });
+  document.body.style.overflow = 'hidden';
+  cursor.style.display = 'none';
+  ring.style.display = 'none';
+}
+
 function closeImageModal() {
   imgModal.style.opacity = '0';
   imgModalBox.style.transform = 'scale(0.92) translateY(20px)';
@@ -924,6 +959,9 @@ function closeImageModal() {
   document.body.style.overflow = '';
   cursor.style.display = '';
   ring.style.display = '';
+  imgEl.style.display = '';
+  const oldIframe = document.getElementById('doc-modal-iframe');
+  if (oldIframe) oldIframe.remove();
 }
 
 imgClose.addEventListener('click', closeImageModal);
