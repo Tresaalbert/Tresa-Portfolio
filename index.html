@@ -8,8 +8,10 @@
   <style>
     :root {
       --bg: #faf7f5;
+      --bg-rgb: 250,247,245;
       --surface: #f2ede9;
       --card: #ffffff;
+      --card-rgb: 255,255,255;
       --accent: #b5433a;
       --accent2: #9c6b3c;
       --accent3: #7b3058;
@@ -18,9 +20,23 @@
       --border: rgba(181,67,58,0.15);
       --glow: rgba(181,67,58,0.12);
     }
+    html[data-theme="dark"] {
+      --bg: #181113;
+      --bg-rgb: 24,17,19;
+      --surface: #211719;
+      --card: #271c1f;
+      --card-rgb: 39,28,31;
+      --accent: #e2776c;
+      --accent2: #d4a06a;
+      --accent3: #b772a0;
+      --text: #f5ece9;
+      --muted: #b59a9c;
+      --border: rgba(226,119,108,0.22);
+      --glow: rgba(226,119,108,0.16);
+    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; cursor: none; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; cursor: none; transition: background 0.4s ease, color 0.4s ease; }
 
     /* ── CURSOR ── */
     #cursor { position: fixed; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: multiply; transition: width 0.2s, height 0.2s; }
@@ -42,8 +58,8 @@
     #progress-bar { position: fixed; top: 0; left: 0; height: 2px; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); z-index: 9999; transition: width 0.1s; }
 
     /* ── NAV ── */
-    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: rgba(250,247,245,0.88); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); transition: padding 0.4s; }
-    nav.scrolled { padding: 0.7rem 5%; background: rgba(250,247,245,0.97); box-shadow: 0 2px 20px rgba(181,67,58,0.07); }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: rgba(var(--bg-rgb),0.88); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); transition: padding 0.4s, background 0.4s; }
+    nav.scrolled { padding: 0.7rem 5%; background: rgba(var(--bg-rgb),0.97); box-shadow: 0 2px 20px rgba(181,67,58,0.07); }
     .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--accent); letter-spacing: 0.05em; position: relative; }
     .nav-logo::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1px; background: var(--accent); transition: width 0.4s; }
     .nav-logo:hover::after { width: 100%; }
@@ -52,6 +68,26 @@
     .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 1px; background: var(--accent); transition: width 0.3s, left 0.3s; }
     .nav-links a:hover { color: var(--accent); }
     .nav-links a:hover::after { width: 100%; left: 0; }
+
+    /* ── THEME TOGGLE ── */
+    #theme-toggle {
+      position: relative; width: 52px; height: 28px; border-radius: 100px;
+      border: 1px solid var(--border); background: var(--surface); cursor: pointer;
+      flex-shrink: 0; margin-left: 1.2rem; padding: 0; transition: background 0.4s, border-color 0.4s;
+    }
+    #theme-toggle::before {
+      content: ''; position: absolute; top: 2px; left: 2px; width: 22px; height: 22px;
+      border-radius: 50%; background: var(--accent); transition: transform 0.4s cubic-bezier(0.23,1,0.32,1), background 0.4s;
+    }
+    html[data-theme="dark"] #theme-toggle::before { transform: translateX(24px); }
+    .theme-icon {
+      position: absolute; top: 50%; transform: translateY(-50%); font-size: 0.7rem;
+      line-height: 1; pointer-events: none; transition: opacity 0.3s;
+    }
+    .theme-icon-sun { left: 6px; opacity: 1; }
+    .theme-icon-moon { right: 6px; opacity: 0.35; }
+    html[data-theme="dark"] .theme-icon-sun { opacity: 0.35; }
+    html[data-theme="dark"] .theme-icon-moon { opacity: 1; }
 
     /* ── HERO ── */
     #hero { min-height: 90vh; display: flex; flex-direction: column; justify-content: flex-start; padding: 8rem 5% 0; position: relative; overflow: hidden; z-index: 1; }
@@ -92,7 +128,7 @@
     .btn-resume:hover { box-shadow: 0 8px 28px rgba(181,67,58,0.4); transform: translateY(-2px); }
 
     .hero-stats { position: absolute; right: 5%; top: 20%; transform: translateY(-50%); z-index: 2; display: flex; flex-direction: column; gap: 1rem; animation: fadeUp 1s 0.6s ease both; }
-    .stat-card { background: rgba(255,255,255,0.85); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; backdrop-filter: blur(12px); text-align: center; transition: all 0.3s; box-shadow: 0 4px 16px rgba(181,67,58,0.06); }
+    .stat-card { background: rgba(var(--card-rgb),0.85); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; backdrop-filter: blur(12px); text-align: center; transition: all 0.3s; box-shadow: 0 4px 16px rgba(181,67,58,0.06); }
     .stat-card:hover { border-color: rgba(181,67,58,0.35); transform: translateX(-6px); box-shadow: 0 10px 32px rgba(181,67,58,0.12); }
     .stat-number { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--accent); font-weight: 900; }
     .stat-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
@@ -115,7 +151,7 @@
     .about-text p { color: var(--muted); line-height: 1.95; margin-bottom: 1.3rem; font-size: 1rem; }
     .about-text p strong { color: var(--text); font-weight: 500; }
     .about-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.8rem; }
-    .tag { font-size: 0.78rem; padding: 0.35rem 0.9rem; border: 1px solid var(--border); border-radius: 100px; color: var(--muted); transition: all 0.3s; cursor: default; background: #fff; }
+    .tag { font-size: 0.78rem; padding: 0.35rem 0.9rem; border: 1px solid var(--border); border-radius: 100px; color: var(--muted); transition: all 0.3s; cursor: default; background: var(--card); }
     .tag:hover { border-color: var(--accent); color: var(--accent); background: rgba(181,67,58,0.06); transform: translateY(-2px); }
 
     /* ── PROJECTS ── */
@@ -162,7 +198,7 @@
     .role-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 0.3rem; position: relative; z-index: 1; color: var(--text); }
     .role-org { color: var(--accent); font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.7rem; position: relative; z-index: 1; }
     .role-desc { color: var(--muted); font-size: 0.88rem; line-height: 1.8; position: relative; z-index: 1; }
-    .role-date { display: inline-block; margin-top: 1rem; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; border: 1px solid var(--border); padding: 0.2rem 0.7rem; border-radius: 100px; position: relative; z-index: 1; transition: all 0.3s; background: #fff; }
+    .role-date { display: inline-block; margin-top: 1rem; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; border: 1px solid var(--border); padding: 0.2rem 0.7rem; border-radius: 100px; position: relative; z-index: 1; transition: all 0.3s; background: var(--card); }
     .role-card:hover .role-date { border-color: var(--accent); color: var(--accent); }
 
     /* ── CERTIFICATIONS ── */
@@ -198,12 +234,12 @@
     .contact-email::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 0; height: 1px; background: var(--accent); transition: width 0.4s; }
     .contact-email:hover::after { width: 100%; }
     .contact-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
-    .contact-link { color: var(--muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.6rem 1.4rem; border: 1px solid var(--border); border-radius: 100px; transition: all 0.3s; position: relative; overflow: hidden; background: #fff; cursor: pointer; }
+    .contact-link { color: var(--muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.6rem 1.4rem; border: 1px solid var(--border); border-radius: 100px; transition: all 0.3s; position: relative; overflow: hidden; background: var(--card); cursor: pointer; }
     .contact-link::before { content: ''; position: absolute; inset: 0; border-radius: 100px; background: rgba(181,67,58,0.06); transform: scaleX(0); transform-origin: left; transition: transform 0.35s; }
     .contact-link:hover::before { transform: scaleX(1); }
     .contact-link:hover { color: var(--accent); border-color: rgba(181,67,58,0.35); }
     .contact-link.resume-btn {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   color: var(--muted);
 }
@@ -253,7 +289,7 @@
     .modal-header {
       display: flex; justify-content: space-between; align-items: center;
       padding: 1.2rem 1.6rem; border-bottom: 1px solid var(--border);
-      flex-shrink: 0; background: #fff;
+      flex-shrink: 0; background: var(--card);
     }
     .modal-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--accent); }
     .modal-actions { display: flex; gap: 0.8rem; align-items: center; }
@@ -277,7 +313,7 @@
     .pdf-placeholder {
       width: 100%; min-height: 500px; display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 1.2rem;
-      border: 2px dashed var(--border); border-radius: 8px; color: var(--muted); text-align: center; padding: 2rem; background: #fff;
+      border: 2px dashed var(--border); border-radius: 8px; color: var(--muted); text-align: center; padding: 2rem; background: var(--card);
     }
     .pdf-placeholder .pdf-icon { font-size: 3rem; }
     .pdf-placeholder p { font-size: 0.9rem; line-height: 1.7; max-width: 320px; }
@@ -286,6 +322,13 @@
     @media (max-width: 900px) { .about-grid { grid-template-columns: 1fr; } .about-avatar { max-width: 220px; margin: 0 auto; } .hero-stats { display: none; } }
     @media (max-width: 600px) { .nav-links { display: none; } body { cursor: auto; } #cursor, #cursor-ring { display: none; } }
   </style>
+  <script>
+    (function() {
+      var saved = localStorage.getItem('theme');
+      var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
 </head>
 <body>
 
@@ -323,7 +366,7 @@
     transform:scale(0.92) translateY(20px);transition:transform 0.4s cubic-bezier(0.23,1,0.32,1);
     overflow:hidden;box-shadow:0 32px 80px rgba(30,18,21,0.28);" id="image-modal-box">
     <div style="display:flex;justify-content:space-between;align-items:center;
-      padding:1.2rem 1.6rem;border-bottom:1px solid var(--border);flex-shrink:0;background:#fff;">
+      padding:1.2rem 1.6rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--card);">
       <span style="font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--accent);" id="image-modal-title">Achievement</span>
       <div style="display:flex;gap:0.8rem;align-items:center;">
         <a id="image-modal-download" href="#" download
@@ -359,6 +402,10 @@
     <li><a href="#achievements">Achievements</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
+  <button id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <span class="theme-icon theme-icon-sun">☀</span>
+    <span class="theme-icon theme-icon-moon">☾</span>
+  </button>
 </nav>
 
 <!-- HERO -->
@@ -796,7 +843,7 @@ A fun browser-based Pyramid Solitaire card game where players pair cards summing
           <span style="font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);background:rgba(181,67,58,0.08);border:1px solid rgba(181,67,58,0.2);padding:3px 10px;border-radius:100px;">Cultural</span>
         </div>
         <h3 class="project-title">Indep Singing — SJC Event</h3>
-        <p class="project-desc">Among 40+ teams, Secured 1st place in the Group Song (Indian) event at INDEP 2025, the Inter Departmental Cultural Extravaganza held on 12th and 13th December 2025, at St. Joseph's College (Autonomous), Tiruchirappalli.</p>
+        <p class="project-desc">Secured 1st place in the Group Song (Indian) event at INDEP 2025, the Inter Departmental Cultural Extravaganza held on 12th and 13th December 2025, at St. Joseph's College (Autonomous), Tiruchirappalli.</p>
       </div>
       <div style="padding:0 2rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:0.7rem;color:var(--accent);border:1px solid rgba(181,67,58,0.25);padding:2px 10px;border-radius:100px;">2025</span>
@@ -986,6 +1033,15 @@ window.addEventListener('scroll', () => {
     el.appendChild(span);
   });
 })();
+
+/* ── THEME TOGGLE ── */
+const themeToggle = document.getElementById('theme-toggle');
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+});
 
 /* ── RESUME MODAL ── */
 const modal    = document.getElementById('resume-modal');
